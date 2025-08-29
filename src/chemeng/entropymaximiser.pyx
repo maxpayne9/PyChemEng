@@ -1,3 +1,4 @@
+# cython: language_level=2
 #!/usr/bin/env python
 # distutils: language = c++
 # cython: profile=True
@@ -8,7 +9,7 @@ from chemeng.components cimport Components
 import pyOpt
 import math
 
-cpdef double R = 8.3144621
+cdef double R = 8.3144621 # Variables cannot be declared with cpdef
 
 cpdef Components getTotalSpecies(list phaselist):
     cdef Components retval = Components({})

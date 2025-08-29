@@ -1,3 +1,4 @@
+# cython: language_level=2
 #!/usr/bin/env python
 # distutils: language = c++
 # cython: profile=True

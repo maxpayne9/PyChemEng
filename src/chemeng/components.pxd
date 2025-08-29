@@ -1,3 +1,4 @@
+# cython: language_level=2
 #!/usr/bin/env python
 #distutils: language = c++
 
@@ -14,6 +15,6 @@ cdef class Components:
    cpdef Components scale(Components, double)
    cpdef double total(Components)
    cpdef Components normalised(Components)
-   cpdef values(Components)
-   cpdef keys(Components)
-   cpdef iteritems(Components)
+   cpdef list values(Components)
+   cpdef list keys(Components)
+   cpdef list iteritems(Components)

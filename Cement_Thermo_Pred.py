@@ -263,8 +263,8 @@ indexes = []
 for species,phase,amnt in Incompressiblephases:
     for element,amount in Components({species:amnt}).elementalComposition().iteritems():
         if element in Unavailable_Elements:
-	    if Incompressiblephases.index((species,phase,amnt)) not in indexes:
-	        indexes.append(Incompressiblephases.index((species,phase,amnt)))
+            if Incompressiblephases.index((species,phase,amnt)) not in indexes:
+                indexes.append(Incompressiblephases.index((species,phase,amnt)))
 ### Ammend Incompressible Phase List	    
 for index in sorted(indexes, reverse=True):
     del Incompressiblephases[index]
@@ -301,10 +301,10 @@ def updatePlot():
     legendProxies = []
     i=0
     for name in names:
-	if name not in unwantedlist and sum(Moles[name])>0.01:
-	    legendnames.append(name)
-	    legendProxies.append(plt.Rectangle((0, 0), 1, 1, fc=colorsys.hls_to_rgb(abs(hash(name))*360/maxinteger, 0.5, abs(hash(name))/maxinteger)))
-	    i+=1
+        if name not in unwantedlist and sum(Moles[name])>0.01:
+            legendnames.append(name)
+            legendProxies.append(plt.Rectangle((0, 0), 1, 1, fc=colorsys.hls_to_rgb(abs(hash(name))*360/maxinteger, 0.5, abs(hash(name))/maxinteger)))
+            i+=1
 
     ax1.clear();
     ax1.legend(legendProxies, legendnames,loc='center left', bbox_to_anchor=(1, 0.5),fancybox=True, shadow=True)
@@ -314,18 +314,18 @@ def updatePlot():
 
     Saved_mass = [0]*len(Mass[names[0]])   	    
     for name in names: 
-	if name not in unwantedlist and sum(Moles[name])>0.001:
-	    try:
-		ax1.fill_between(Ts[name], Saved_mass, [sum(x) for x in zip(Saved_mass, Mass[name])], facecolor = colorsys.hls_to_rgb(abs(hash(name))*360/maxinteger, 0.5, abs(hash(name))/maxinteger) ,label = name, picker=True) 
-		Saved_mass = [sum(x) for x in zip(Saved_mass, Mass[name])]
+        if name not in unwantedlist and sum(Moles[name])>0.001:
+            try:
+                ax1.fill_between(Ts[name], Saved_mass, [sum(x) for x in zip(Saved_mass, Mass[name])], facecolor = colorsys.hls_to_rgb(abs(hash(name))*360/maxinteger, 0.5, abs(hash(name))/maxinteger) ,label = name, picker=True) 
+                Saved_mass = [sum(x) for x in zip(Saved_mass, Mass[name])]
 		
-	    except:
-		print "ERRROROROR"
+            except:
+                print "ERRROROROR"
     for T in T_solved:
-	ax1.plot([T-273.15,T-273.15],[0,Total_Solid_Mass[0]],'--k')
-    fig.canvas.mpl_connect('pick_event', pick_handler)	
-    plt.draw()
-    plt.pause(0.0001)
+        ax1.plot([T-273.15,T-273.15],[0,Total_Solid_Mass[0]],'--k')
+        fig.canvas.mpl_connect('pick_event', pick_handler)	
+        plt.draw()
+        plt.pause(0.0001)
 
 def solveAtT(T):
     T_solved.append(T)
@@ -392,13 +392,13 @@ def on_button_clicked(event):
     sasplotline = ["-","-","-","-","-","-","-","-","-","-","-","-","-","--","--","--","--","--","--","--","--","--","--","--","--","--"] 
 
     for name in pp_gas: 
-	sorted_lists2 = sorted(zip(pp_gas[name], Ts_gas[name]), reverse=False, key=lambda x: x[1])
-	pp_gas[name], Ts_gas[name] = [[x[i] for x in sorted_lists2] for i in range(2)]     
-    ii = 0
+        sorted_lists2 = sorted(zip(pp_gas[name], Ts_gas[name]), reverse=False, key=lambda x: x[1])
+        pp_gas[name], Ts_gas[name] = [[x[i] for x in sorted_lists2] for i in range(2)]     
+        ii = 0
     for name in pp_gas:
-	if len(pp_gas[name]) > 2:
-	    plt.plot(Ts_gas[name], pp_gas[name], linestyle=sasplotline[ii], marker=gasplotstyles[ii], color='k', markevery = 5,label = name)
-	    ii+=1
+        if len(pp_gas[name]) > 2:
+            plt.plot(Ts_gas[name], pp_gas[name], linestyle=sasplotline[ii], marker=gasplotstyles[ii], color='k', markevery = 5,label = name)
+            ii+=1
     plt.tick_params(axis='x', labelsize=16)    
     plt.tick_params(axis='y', labelsize=16) 
     plt.title("Partial Pressures",fontsize = 28)
@@ -427,14 +427,14 @@ txt = fig.suptitle("Phase Diagram",fontsize = 25)
 Handled_data = []    
 def pick_handler(event):
     if event.mouseevent.xdata not in Handled_data:
-	txt.set_text(event.artist.get_label())
-	T = (event.mouseevent.xdata)
-	print "\nTemperature =",T , "C"
-	solveAtT(event.mouseevent.xdata+273.15)
+        txt.set_text(event.artist.get_label())
+        T = (event.mouseevent.xdata)
+        print "\nTemperature =",T , "C"
+        solveAtT(event.mouseevent.xdata+273.15)
 	for name in names:
 	    indexT = min(range(len(Ts[name])), key=lambda i: abs(Ts[name][i]-T))  
 	    if Mass_percent[name][indexT]> 0.01 and name != "Gas":
-		print name,Mass_percent[name][indexT], "Percent"
+		    print name,Mass_percent[name][indexT], "Percent"
 	print
 	Handled_data.append(event.mouseevent.xdata)
 
@@ -445,8 +445,8 @@ deltaT = T_Finish-T_start
 denom = 2
 while ((deltaT / denom) > T_step):
     for i in range(1,denom,2):
-	T_vals.append(T_Finish - i * deltaT / denom)
-    denom = denom * 2
+        T_vals.append(T_Finish - i * deltaT / denom)
+        denom = denom * 2
 
 for T in map(lambda T : T+273.15, T_vals):
     solveAtT(T)
@@ -455,32 +455,32 @@ for T in map(lambda T : T+273.15, T_vals):
 if AutoRefinement:
     i=0
     while i< len( Ts["Gas"])-1:
-	names1 = []
-	names2 = []
-	for name in names:
-	    if Moles[name][i]>0.001:
-		names1.append(name)
-	    if Moles[name][i+1]>0.001:
-		names2.append(name)
-	if names1 != names2:
-	    solveAtT((Ts["Gas"][i] + Ts["Gas"][i+1])/2.0 + 273.15)   
-	i+=1    
+        names1 = []
+        names2 = []
+        for name in names:
+            if Moles[name][i]>0.001:
+            names1.append(name)
+            if Moles[name][i+1]>0.001:
+            names2.append(name)
+        if names1 != names2:
+            solveAtT((Ts["Gas"][i] + Ts["Gas"][i+1])/2.0 + 273.15)   
+        i+=1    
 
 
 if AutoRefinement:
     i=0
     while i< len( Ts["Gas"])-1:
-	names1 = []
-	names2 = []
-	for name in names:
-	    if Moles[name][i]>0.001:
-		names1.append(name)
-	    if Moles[name][i+1]>0.001:
-		names2.append(name)
-	if names1 != names2:
-	    solveAtT((Ts["Gas"][i] + Ts["Gas"][i+1])/2.0 + 273.15)   
-	i+=1  
-  
+        names1 = []
+        names2 = []
+        for name in names:
+            if Moles[name][i]>0.001:
+            names1.append(name)
+            if Moles[name][i+1]>0.001:
+            names2.append(name)
+        if names1 != names2:
+            solveAtT((Ts["Gas"][i] + Ts["Gas"][i+1])/2.0 + 273.15)   
+        i+=1  
+    
 data1 = Ts,Moles,Mass,Total_Solid_Mass,Ts_gas,pp_gas,Mass_percent
 output = open(("CEMENTSOFTWARE") +'.pkl', 'wb')
 pickle.dump(data1, output)

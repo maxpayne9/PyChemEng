@@ -1,3 +1,4 @@
+# cython: language_level=2
 #!/usr/bin/env python
 import math
 #Ensure that the elemental database has been loaded first

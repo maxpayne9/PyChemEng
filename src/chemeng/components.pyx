@@ -1,3 +1,4 @@
+# cython: language_level=2
 #!/usr/bin/env python
 # distutils: language = c++
 # cython: profile=True
@@ -9,109 +10,121 @@ from chemeng.elementdata import elements
 from chemeng.speciesdata import speciesData
    
 cdef class Components:
-   def __init__(self, dict data):
-       for key, entry in data.iteritems():
-           self._list[key] = entry
+    def __init__(self, dict data):
+        self._list = map[string, double]()
+        for key, entry in data.iteritems():
+            self._list[key] = entry
        
-   cpdef Components copy(Components self):
-       cdef Components retval = Components.__new__(Components)
-       retval._list = self._list.copy()
-       return retval
+    cpdef Components copy(Components self):
+        cdef Components retval = Components.__new__(Components)
+        retval._list = map[string, double]()
+        for entry in self._list:
+            retval._list[entry.first] = entry.second
+        return retval
 
-   cpdef Components mix(self, Components other):
-       for entry in other._list:
-           it = self._list.find(entry.first)
-           if it == self._list.end():
-               self._list.insert(entry)
-           else:
-               self._list[entry.first] += entry.second
+    cpdef Components mix(self, Components other):
+        for entry in other._list:
+            it = self._list.find(entry.first)
+            if it == self._list.end():
+                self._list.insert(entry)
+            else:
+                self._list[entry.first] += entry.second
 
-   cpdef values(Components self):
-      return self._list.values()
+    cpdef list values(Components self):
+        cdef list vals = []
+        for entry in self._list:
+            vals.append(entry.second)
+        return vals
 
-   cpdef keys(Components self):
-      return self._list.keys()
+    cpdef list keys(Components self):
+        cdef list ks = []
+        for entry in self._list:
+            ks.append(entry.first)
+        return ks
 
-   cpdef iteritems(Components self):
-      return self._list.iteritems()
+    cpdef list iteritems(Components self):
+        cdef list items = []
+        for entry in self._list:
+            items.append((entry.first, entry.second))
+        return items
 
-   def __contains__(Components self, string key):
-       return self._list.count(key) != 0
+    def __contains__(Components self, string key):
+        return self._list.count(key) != 0
 
-   def __add__(self, Components other):
-       cdef Components copy = self.copy()
-       copy.mix(other)
-       return copy
+    def __add__(self, Components other):
+        cdef Components copy = self.copy()
+        copy.mix(other)
+        return copy
 
-   def __mul__(self, double factor):
-       cdef Components copy = self.copy()
-       copy.scale(factor)
-       return copy
+    def __mul__(self, double factor):
+        cdef Components copy = self.copy()
+        copy.scale(factor)
+        return copy
 
-   def __div__(self, double factor):
-       return self * (1.0 / factor)
+    def __div__(self, double factor):
+        return self * (1.0 / factor)
 
-   def __neg__(self):
-       return self * (-1.0)
-   
-   def __sub__(self, Components other):
-       return self + (-other)
+    def __neg__(self):
+        return self * (-1.0)
+    
+    def __sub__(self, Components other):
+        return self + (-other)
 
-   cpdef double totalMass(self):
-       cdef double sum = 0.0
-       for entry in self._list:
-           sum += entry.second * speciesData[entry.first].mass
-       return sum
+    cpdef double totalMass(self):
+        cdef double sum = 0.0
+        for entry in self._list:
+            sum += entry.second * speciesData[entry.first].mass
+        return sum
 
-   cpdef double avgMolarMass(self): #g / mol
-       return self.totalMass() / self.total()
+    cpdef double avgMolarMass(self): #g / mol
+        return self.totalMass() / self.total()
 
-   cpdef Components elementalComposition(Components self): #mol
-       cdef Components retval = Components.__new__(Components)
-       for entry in self._list:
-           retval.mix(speciesData[entry.first].elementalComposition * entry.second)
-       return retval
+    cpdef Components elementalComposition(Components self): #mol
+        cdef Components retval = Components.__new__(Components)
+        for entry in self._list:
+            retval.mix(speciesData[entry.first].elementalComposition * entry.second)
+        return retval
 
-   cpdef Components scale(Components self, double factor):
-       """A * operator to allow scaling of components (e.g. Components * 2)"""
-       for entry in self._list:
-           self._list[entry.first] *= factor
-       return self
+    cpdef Components scale(Components self, double factor):
+        """A * operator to allow scaling of components (e.g. Components * 2)"""
+        for entry in self._list:
+            self._list[entry.first] *= factor
+        return self
 
-   cpdef double total(self):#mol
-       """Returns the total molar flow of all the components"""
-       cdef double total = 0
-       for entry in self._list:
-           total += entry.second
-       return total
+    cpdef double total(self):#mol
+        """Returns the total molar flow of all the components"""
+        cdef double total = 0
+        for entry in self._list:
+            total += entry.second
+        return total
 
-   cpdef Components normalised(self):
-       """Creates a copy of the component stream which is normalised (total molar flow of 1)"""
-       cdef Components copy = self.copy()
-       copy.scale(1.0 / self.total())
-       return copy
+    cpdef Components normalised(self):
+        """Creates a copy of the component stream which is normalised (total molar flow of 1)"""
+        cdef Components copy = self.copy()
+        copy.scale(1.0 / self.total())
+        return copy
 
-   def __str__(self):
-       output="C{"
-       for entry in self._list:
-           output += "\'%s\':%g, " % (entry.first, entry.second)
-       return output[:-2]+"}"
-   
-   def __len__(self):
-       return self._list.size()
+    def __str__(self):
+        output="C{"
+        for entry in self._list:
+            output += "\'%s\':%g, " % (entry.first, entry.second)
+        return output[:-2]+"}"
+    
+    def __len__(self):
+        return self._list.size()
 
-   def __getitem__(self, string key):
-       cdef map[string, double].iterator it
-       it = self._list.find(key)
-       if it == self._list.end():
-           return 0.0
-       cimport cython.operator.dereference
-       return cython.operator.dereference(it).second
+    def __getitem__(self, string key):
+        cdef map[string, double].iterator it
+        it = self._list.find(key)
+        if it == self._list.end():
+            return 0.0
+        cimport cython.operator.dereference
+        return cython.operator.dereference(it).second
 
-   def __setitem__(self, string key, double value):
-       self._list[key] = value
+    def __setitem__(self, string key, double value):
+        self._list[key] = value
 
-   def __contains__(self, string key):
-       cdef map[string, double].iterator it
-       it = self._list.find(key)
-       return it != self._list.end()
+    def __contains__(self, string key):
+        cdef map[string, double].iterator it
+        it = self._list.find(key)
+        return it != self._list.end()

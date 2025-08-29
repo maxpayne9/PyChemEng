@@ -1,3 +1,4 @@
+# cython: language_level=2
 #!/usr/bin/env python
 # distutils: language = c++
 # cython: profile=True
@@ -169,10 +170,10 @@ cdef class IdealGasPhase(Phase):
             retval[entry.first] += vdp 
         return retval
 
-    cpdef double volume(self):
+    cpdef double volume(IdealGasPhase self):
         return self.components.total() * R * self.T / self.P
 
-    cpdef double Cv(self) except + :
+    cpdef double Cv(IdealGasPhase self) except + :
         return self.Cp() - R * self.total()
 
     def __add__(self, IdealGasPhase other):
@@ -216,7 +217,7 @@ cdef class IncompressiblePhase(Phase):
             retval[entry.first] += vdp
         return retval
 
-    cpdef double Cv(self) except + :
+    cpdef double Cv(IncompressiblePhase self) except + :
         return self.Cp()
 
     def __add__(self, IncompressiblePhase other):

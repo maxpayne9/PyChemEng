@@ -1,3 +1,4 @@
+# cython: language_level=2
 #!/usr/bin/env python
 #distutils: language = c++
 
@@ -23,12 +24,12 @@ cdef class IdealGasPhase(Phase):
     cpdef IdealGasPhase copy(IdealGasPhase)
     cpdef double entropy(IdealGasPhase)
     cpdef double volume(IdealGasPhase)
-    cpdef double Cv(IdealGasPhase)
+    cpdef double Cv(IdealGasPhase) except +
 
 cdef class IncompressiblePhase(Phase):
     cdef public double molarvolume
     cpdef IncompressiblePhase copy(IncompressiblePhase)
-    cpdef double enthalpy(IncompressiblePhase)
+    cpdef double enthalpy(IncompressiblePhase) except +
     cpdef double volume(IncompressiblePhase)
-    cpdef double Cv(IncompressiblePhase)
+    cpdef double Cv(IncompressiblePhase) except +
 
